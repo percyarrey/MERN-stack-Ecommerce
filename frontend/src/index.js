@@ -4,10 +4,36 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+//REACT ROUTER DOM
+import {createBrowserRouter,createRoutesFromElements,Route,RouterProvider} from 'react-router-dom'
+
+//IMPORT PAGES
+import Menu from './pages/Menu';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Home from './pages/Home';
+import Login from './pages/login';
+import Addproduct from './pages/addproduct';
+import Signup from './pages/signup';
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path='/' element={<App/>}>
+      <Route index element={<Home/>}/>
+      <Route path='menu' element={<Menu/>}/>
+      <Route path='about' element={<About/>}/>
+      <Route path='Contact' element={<Contact/>}/>
+      <Route path='login' element={<Login/>}/>
+      <Route path='addproduct' element={<Addproduct/>}/>
+      <Route path='signup' element={<Signup/>}/>
+    </Route>
+  )
+)
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router}/> 
   </React.StrictMode>
 );
 
