@@ -7,12 +7,17 @@ import loginsignupimage from '../assets/login-animation.gif'
 import {BiHide,BiShow} from 'react-icons/bi'
 import { Link,useNavigate } from 'react-router-dom'
 //IMPORT TOASTER
-import { toast } from 'react-hot-toast'
+import toast from 'react-hot-toast'
+
+
+//IMPORT REACT SPINNNER
+import {TailSpin} from "react-loader-spinner";
 
 function Signup() {
     /* NAVIGATION */
     const navigate = useNavigate()
-
+    //REACT HOOK DECLARATION
+    const [singupSpinner,setSignupSpinner]=React.useState(false)
     const [Spwd,setSpwd]=React.useState(false)
     const [warning,setWarning]=React.useState("")
     const [data,setdata]=React.useState({
@@ -54,29 +59,39 @@ function Signup() {
     }
     const handleSubmit=async(e)=>{
         e.preventDefault()
-        const {fname,lname,email,pwd,cpwd}=data
-        if(fname&&lname&&email&&pwd&&cpwd){
+        if(!singupSpinner){
+          const {fname,lname,email,pwd,cpwd}=data
+          if(fname&&lname&&email&&pwd&&cpwd){
           if(pwd.length>4){
             if(pwd==cpwd){
+              setSignupSpinner(true)
+              setWarning("")
               const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/signup`,{
                 method: "POST",
                 headers:{
                   "content-type" : "application/json"
                 },
                 body: JSON.stringify(data)
+              }).then((res)=>{
+                setSignupSpinner(false)
+                return res.json()
               })
+                .catch((e)=>{
+                  setSignupSpinner(false)
+                  return e
+                })
               
-              const dataRes = await fetchData.json()
+              const dataRes = await fetchData
               if(dataRes.message=="Email already Exist"){
                 setWarning("Email already Exist")
                 toast("Email already Exist")
               }else{
                 if(dataRes.message=="Successfully sign Up!"){
                   toast("Successfully sign Up!")
-                  navigate("/login")
+                  navigate("/login",{replace:true})
                 }else{
-                  setWarning("Something went wrong")
-                  toast("Something went wrong")
+                  setWarning(dataRes.message)
+                  toast(dataRes.message)
                 }   
               }
             }
@@ -91,6 +106,7 @@ function Signup() {
         }else{
           setWarning("Please enter required fields")
           toast("Please enter required fields")
+        }
         }
     }
   return (
@@ -127,7 +143,7 @@ function Signup() {
               </div>
 
               <div className='d-flex justify-content-center'>
-                <button type='submit' className='btn px-5 mt-2 btn-danger rounded-pill'>SignUp</button>
+                <button className='btn px-5 mt-2 btn-danger rounded-pill' style={{width:150,height:38}}>{singupSpinner?<TailSpin color='white' width={50} height={28}/>:"SignUp"}</button>
               </div>
               <p className='text-center mt-2'>Already have account ? <Link to={"/login"}>Login</Link></p>
             </form>

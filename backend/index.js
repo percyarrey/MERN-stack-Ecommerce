@@ -64,4 +64,21 @@ app.post("/signup",async(req,res)=>{
     }
 })
 
+
+app.post("/login",async(req,res)=>{
+  const {email} = req.body
+  console.log(req.body)
+  userModel(res.body)
+  const result = await userModel.findOne({email : email})
+  if(result){
+      if(result.pwd==req.body.pwd){
+        res.send({message : "Welcome"})
+      }else{
+        res.send({message : "Wrong Email and Password"})
+      }
+  }else{
+    res.send({message : "Something Went Wrong"})
+  }
+})
+
 app.listen(PORT,()=>console.log("Server is running at port :" + PORT))

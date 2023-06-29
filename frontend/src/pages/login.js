@@ -5,9 +5,16 @@ import loginsignupimage from '../assets/login-animation.gif'
 
 //REACT ICONS
 import {BiHide,BiShow} from 'react-icons/bi'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
+import { TailSpin } from 'react-loader-spinner'
 
-function Login() {
+function Login() {    
+    /* NAVIGATION */
+    const navigate = useNavigate()
+    //REACT HOOK DECLARATION
+    const [singupSpinner,setSignupSpinner]=React.useState(false)
+
     const [Spwd,setSpwd]=React.useState(false)
     const [warning,setWarning]=React.useState("")
     const [data,setdata]=React.useState({
@@ -29,14 +36,47 @@ function Login() {
       })
     }
 
-    const handleSubmit=(e)=>{
+    const handleSubmit=async(e)=>{
         e.preventDefault()
-        const {email,pwd}=data
-        if(email&&pwd){
-          alert("succesful")
-        }else{
-          setWarning("Please enter required fields")
+        if(!singupSpinner){
+          const {email,pwd}=data
+          if(email&&pwd){
+            setSignupSpinner(true)
+                setWarning("")
+                const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/login`,{
+                  method: "POST",
+                  headers:{
+                    "content-type" : "application/json"
+                  },
+                  body: JSON.stringify(data)
+                }).then((res)=>{
+                  setSignupSpinner(false)
+                  return res.json()
+                })
+                  .catch((e)=>{
+                    setSignupSpinner(false)
+                    return e
+                  })
+                
+                const dataRes = await fetchData
+                if(dataRes.message=="Wrong Email and Password"){
+                  setWarning("Wrong Email and Password")
+                  toast("Wrong Email and Password")
+                }else{
+                  if(dataRes.message=="Welcome"){
+                    toast("Welcome")
+                    navigate("/menu",{replace:true})
+                  }else{
+                    setWarning(dataRes.message)
+                    toast(dataRes.message)
+                  }   
+                }
+          }else{
+            setWarning("Please enter required fields")
+            toast("Please enter required fields")
+          }
         }
+        
     }
   return (
     <div className='w-100 d-flex justify-content-center align-items-center'>
@@ -59,7 +99,7 @@ function Login() {
               </div>
 
               <div className='d-flex justify-content-center'>
-                <button type='submit' className='btn px-5 mt-4 btn-danger rounded-pill'>Login</button>
+                <button type='submit' className='btn px-5 mt-4 btn-danger rounded-pill' style={{width:150,height:38}}>{singupSpinner?<TailSpin color='white' width={50} height={28}/>:"Login"}</button>
               </div>
               <p className='text-center mt-4'>Don't have an Account ? <Link to={"/signup"}>Signup</Link></p>
             </form>
