@@ -18,17 +18,19 @@ import 'bootstrap/dist/js/bootstrap'
 function App() {
   
   return (
-    <div className="bg-light" style={{maxWidth:"100vw",overflow:"hidden"}}>
+    <>
+      <div className="bg-light" style={{maxWidth:"100vw",overflow:"hidden"}}>
       <Toaster/>
       <div>
-        <Header/> 
-        <main className='d-flex container-fluid container-lg'  style={{paddingTop:"65px",minHeight:"calc(99vh - 65px)"}}> 
-          <Outlet/>
-        </main>
-        <Footer/>
+          <Header/> 
+          <main className='d-flex container-fluid container-lg'  style={{paddingTop:"65px",minHeight:"calc(99vh - 65px)"}}> 
+            <Outlet/>
+          </main>
+          <Footer/>
+        </div>
       </div>
-    </div>
-  );
+    </>
+  )
 }
 
 export default App;
